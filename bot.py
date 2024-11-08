@@ -1958,7 +1958,7 @@ def process_attack_command(message):
                 parse_mode='Markdown')
             return
 
-        if duration >= 150:
+        if duration >= 151:
             bot.send_message(
                 message.chat.id,
                 "*⏳ Maximum duration is 150 seconds! ⏳*\n\n*Shorten the duration and try again.*",
