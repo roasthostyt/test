@@ -1979,7 +1979,7 @@ def process_attack_command(message):
             f"*⚔️ Attack Launched! ⚔️*\n\n"
             f"*Target Host: {target_ip}*\n"
             f"*Target Port: {target_port}*\n"
-            f"*Duration: {150} seconds*\n\n"
+            f"*Duration: {duration} seconds*\n\n"
             "*Let the chaos begin! 🔥 Inflame the battlefield! ⚡ Clear the scene with your hands! 💥 Goal: Clear hits and make a mark! 🎯*"
         )
 
