@@ -1931,7 +1931,7 @@ def handle_attack_command(message):
 
         bot.send_message(
             chat_id,
-            "*🔥 Ready to launch an attack? 🔥*\n\n*Provide the target IP, port, and duration in seconds.*\n\nExample: 167.67.25 6296 150",
+            "*🔥 Ready to launch an attack? 🔥*\n\n*Provide the target IP, port, and duration in seconds.*\n\nExample: 167.67.25 6296 180",
             parse_mode='Markdown')
         bot.register_next_step_handler(message, process_attack_command)
 
@@ -1958,10 +1958,10 @@ def process_attack_command(message):
                 parse_mode='Markdown')
             return
 
-        if duration >= 151:
+        if duration >= 1600:
             bot.send_message(
                 message.chat.id,
-                "*⏳ Maximum duration is 150 seconds! ⏳*\n\n*Shorten the duration and try again.*",
+                "*⏳ Maximum duration is 1600 seconds! ⏳*\n\n*Shorten the duration and try again.*",
                 parse_mode='Markdown')
             return
 
